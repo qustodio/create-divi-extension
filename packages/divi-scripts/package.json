@@ -1,5 +1,5 @@
 {
-  "name": "qustodio-divi-scripts",
+  "name": "@qustodio/divi-scripts",
   "version": "1.0.0",
   "description": "Configuration and scripts for Qustodio Divi Extension.",
   "repository": "qustodio/create-divi-extension",
@@ -91,5 +91,8 @@
       "Firefox ESR",
       "not ie < 11"
     ]
+  },
+  "publishConfig": {
+    "registry":"https://npm.pkg.github.com"
   }
 }

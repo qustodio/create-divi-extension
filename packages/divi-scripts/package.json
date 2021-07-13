@@ -1,6 +1,6 @@
 {
   "name": "@qustodio/divi-scripts",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Configuration and scripts for Qustodio Divi Extension.",
   "repository": "qustodio/create-divi-extension",
   "license": "MIT",

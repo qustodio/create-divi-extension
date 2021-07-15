@@ -92,10 +92,10 @@ module.exports = {
   entry: {
     builder: [require.resolve('./polyfills'), paths.appIndexJs],
     frontend: [
-      // Include all unminified javascript files found in the 'scripts' directory.
+      // Include all javascript files found in the 'scripts' directory.
       ...glob.sync([
         `${paths.appScripts}/**/*.js`,
-        `!${paths.appScripts}/**/*.min.js`,
+        `${paths.appScripts}/**/*.min.js`,
       ]),
     ],
   },

@@ -17,7 +17,7 @@ const findMonorepo = require('divi-dev-utils/workspaceUtils').findMonorepo;
 // Make sure any symlinks in the project folder are resolved:
 // https://github.com/facebook/create-react-app/issues/637
 const appDirectory = fs.realpathSync(process.cwd());
-const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
+const resolveApp = (relativePath) => path.resolve(appDirectory, relativePath);
 
 const envPublicUrl = process.env.PUBLIC_URL;
 
@@ -32,7 +32,7 @@ function ensureSlash(path, needsSlash) {
   }
 }
 
-const getPublicUrl = appPackageJson =>
+const getPublicUrl = (appPackageJson) =>
   envPublicUrl || require(appPackageJson).homepage;
 
 // We use `PUBLIC_URL` environment variable or "homepage" field to infer
@@ -56,6 +56,7 @@ module.exports = {
   appPublic: resolveApp('.'),
   appHtml: resolveApp('public/index.html'),
   appIndexJs: resolveApp('includes/loader.js'),
+  appIndexCss: resolveApp('includes/modules/styles.scss'),
   appPackageJson: resolveApp('package.json'),
   appSrc: resolveApp('includes'),
   appScripts: resolveApp('public/js'),
@@ -69,7 +70,8 @@ module.exports = {
 let checkForMonorepo = true;
 
 // @remove-on-eject-begin
-const resolveOwn = relativePath => path.resolve(__dirname, '..', relativePath);
+const resolveOwn = (relativePath) =>
+  path.resolve(__dirname, '..', relativePath);
 
 // config before eject: we're in ./node_modules/divi-scripts/config/
 module.exports = {
@@ -79,6 +81,7 @@ module.exports = {
   appPublic: resolveApp('.'),
   appHtml: resolveApp('public/index.html'),
   appIndexJs: resolveApp('includes/loader.js'),
+  appIndexCss: resolveApp('includes/modules/styles.scss'),
   appPackageJson: resolveApp('package.json'),
   appSrc: resolveApp('includes'),
   appScripts: resolveApp('public/js'),
@@ -106,6 +109,7 @@ if (useTemplate) {
     appPublic: resolveOwn('template'),
     appHtml: resolveOwn('template/public/index.html'),
     appIndexJs: resolveOwn('template/includes/loader.js'),
+    appIndexCss: resolveApp('includes/modules/styles.scss'),
     appPackageJson: resolveOwn('package.json'),
     appSrc: resolveOwn('template/includes'),
     appScripts: resolveApp('template/scripts'),

@@ -144,6 +144,8 @@ module.exports = {
           },
           {
             test: /\.js$/,
+            // Already-bundled packages: include in the webpack graph, skip re-transpile.
+            exclude: /[\\/]node_modules[\\/]styleguide-react[\\/]/,
             use: [
               require.resolve('thread-loader'),
               {

@@ -99,6 +99,14 @@ describe('Integration', () => {
       ).to.equal(4);
     });
 
+    it('optional catch binding', async () => {
+      const doc = await initDOM('optional-catch-binding');
+
+      expect(
+        doc.getElementById('feature-optional-catch-binding').childElementCount
+      ).to.equal(4);
+    });
+
     it('promises', async () => {
       const doc = await initDOM('promises');
 

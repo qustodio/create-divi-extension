@@ -8,10 +8,15 @@
 // @remove-on-eject-end
 'use strict';
 
+const path = require('path');
 const babelJest = require('babel-jest');
 
 module.exports = babelJest.createTransformer({
-  presets: [require.resolve('babel-preset-divi-extension')],
+  presets: [
+    require.resolve('babel-preset-divi-extension', {
+      paths: [path.resolve(__dirname, '..')],
+    }),
+  ],
   // @remove-on-eject-begin
   babelrc: false,
   // @remove-on-eject-end

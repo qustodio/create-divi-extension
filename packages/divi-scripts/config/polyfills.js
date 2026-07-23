@@ -9,20 +9,12 @@
 // @remove-on-eject-end
 'use strict';
 
-/*if (typeof Promise === 'undefined') {
-  // Rejection tracking prevents a common issue where React gets into an
-  // inconsistent state due to an error, but it gets swallowed by a Promise,
-  // and the user has no idea what causes React's erratic future behavior.
-  require('promise/lib/rejection-tracking').enable();
-  window.Promise = require('promise/lib/es6-extensions.js');
-}*/
-
-// fetch() polyfill for making API calls.
+// ES feature polyfills are injected per-file by @babel/preset-env with
+// useBuiltIns: 'usage' (see babel-preset-divi-extension). Do not require
+// core-js/stable here — that would ship the full polyfill set.
+//
+// Add only polyfills Babel cannot detect from static usage (e.g. fetch):
 // require('whatwg-fetch');
-
-// Object.assign() is commonly used with React.
-// It will use the native implementation if it's present and isn't buggy.
-// Object.assign = require('object-assign');
 
 // In tests, polyfill requestAnimationFrame since jsdom doesn't provide it yet.
 // We don't polyfill it in the browser--this is user's responsibility.

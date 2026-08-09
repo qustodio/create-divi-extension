@@ -17,6 +17,19 @@ const paths = require('./paths');
 const getClientEnvironment = require('./env');
 const glob = require('divi-dev-utils/glob');
 
+// Always resolve the preset from divi-scripts, never from a stale copy in the
+// consuming plugin's node_modules (yarn link / published transitive installs).
+const babelPresetDiviExtension = require.resolve(
+  'babel-preset-divi-extension',
+  {
+    paths: [path.resolve(__dirname, '..')],
+  }
+);
+const babelPresetDiviExtensionDependencies = require.resolve(
+  'babel-preset-divi-extension/dependencies',
+  { paths: [path.resolve(__dirname, '..')] }
+);
+
 const publicPath = paths.servedPath;
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP === 'true';
 const publicUrl = publicPath.slice(0, -1);
@@ -77,6 +90,13 @@ module.exports = {
       '@babel/runtime': path.dirname(
         require.resolve('@babel/runtime/package.json')
       ),
+      // useBuiltIns: 'usage' injects core-js / regenerator imports into app
+      // sources; resolve them from divi-scripts even when the plugin does not
+      // declare those packages itself.
+      'core-js': path.dirname(require.resolve('core-js/package.json')),
+      'regenerator-runtime': path.dirname(
+        require.resolve('regenerator-runtime/package.json')
+      ),
       'react-native': 'react-native-web',
     },
     plugins: [new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson])],
@@ -123,7 +143,7 @@ module.exports = {
                 loader: require.resolve('babel-loader'),
                 options: {
                   babelrc: false,
-                  presets: [require.resolve('babel-preset-divi-extension')],
+                  presets: [babelPresetDiviExtension],
                   plugins: [
                     [
                       require.resolve('babel-plugin-named-asset-import'),
@@ -137,7 +157,6 @@ module.exports = {
                     ],
                   ],
                   compact: true,
-                  highlightCode: true,
                 },
               },
             ],
@@ -153,11 +172,8 @@ module.exports = {
                 options: {
                   babelrc: false,
                   compact: false,
-                  presets: [
-                    require.resolve('babel-preset-divi-extension/dependencies'),
-                  ],
+                  presets: [babelPresetDiviExtensionDependencies],
                   cacheDirectory: true,
-                  highlightCode: true,
                 },
               },
             ],

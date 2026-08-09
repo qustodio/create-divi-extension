@@ -23,6 +23,19 @@ const getClientEnvironment = require('./env');
 const paths = require('./paths');
 const glob = require('divi-dev-utils/glob');
 
+// Always resolve the preset from divi-scripts, never from a stale copy in the
+// consuming plugin's node_modules (yarn link / published transitive installs).
+const babelPresetDiviExtension = require.resolve(
+  'babel-preset-divi-extension',
+  {
+    paths: [path.resolve(__dirname, '..')],
+  }
+);
+const babelPresetDiviExtensionDependencies = require.resolve(
+  'babel-preset-divi-extension/dependencies',
+  { paths: [path.resolve(__dirname, '..')] }
+);
+
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
 const publicPath = '/';
@@ -64,7 +77,7 @@ module.exports = {
   // The first two entry points enable "hot" CSS and auto-refreshes for JS.
   entry: {
     builder: [
-      // We ship a few polyfills by default:
+      // Manual polyfills only (feature polyfills come from Babel usage mode):
       require.resolve('./polyfills'),
       // Include an alternative client for WebpackDevServer. A client's job is to
       // connect to WebpackDevServer by a socket and get notified about changes.
@@ -130,6 +143,13 @@ module.exports = {
       // and thus @babel/runtime might not be resolvable from the source.
       '@babel/runtime': path.dirname(
         require.resolve('@babel/runtime/package.json')
+      ),
+      // useBuiltIns: 'usage' injects core-js / regenerator imports into app
+      // sources; resolve them from divi-scripts even when the plugin does not
+      // declare those packages itself.
+      'core-js': path.dirname(require.resolve('core-js/package.json')),
+      'regenerator-runtime': path.dirname(
+        require.resolve('regenerator-runtime/package.json')
       ),
       // @remove-on-eject-end
       // Support React Native Web
@@ -222,7 +242,7 @@ module.exports = {
                   // @remove-on-eject-begin
                   babelrc: false,
                   // @remove-on-eject-end
-                  presets: [require.resolve('babel-preset-divi-extension')],
+                  presets: [babelPresetDiviExtension],
                   plugins: [
                     [
                       require.resolve('babel-plugin-named-asset-import'),
@@ -239,7 +259,6 @@ module.exports = {
                   // It enables caching results in ./node_modules/.cache/babel-loader/
                   // directory for faster rebuilds.
                   cacheDirectory: true,
-                  highlightCode: true,
                 },
               },
             ],
@@ -259,11 +278,8 @@ module.exports = {
                 options: {
                   babelrc: false,
                   compact: false,
-                  presets: [
-                    require.resolve('babel-preset-divi-extension/dependencies'),
-                  ],
+                  presets: [babelPresetDiviExtensionDependencies],
                   cacheDirectory: true,
-                  highlightCode: true,
                 },
               },
             ],

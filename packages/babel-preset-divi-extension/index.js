@@ -19,7 +19,7 @@ const validateBoolOption = (name, value, defaultValue) => {
   return value;
 };
 
-module.exports = function(api, opts) {
+module.exports = function (api, opts) {
   if (!opts) {
     opts = {};
   }
@@ -53,7 +53,7 @@ module.exports = function(api, opts) {
         require('@babel/preset-env').default,
         {
           targets: {
-            node: '6.12',
+            node: '6.9',
           },
         },
       ],
@@ -61,12 +61,14 @@ module.exports = function(api, opts) {
         // Latest stable ECMAScript features
         require('@babel/preset-env').default,
         {
-          // `entry` transforms `@babel/polyfill` into individual requires for
-          // the targeted browsers. This is safer than `usage` which performs
-          // static code analysis to determine what's required.
-          // This is probably a fine default to help trim down bundles when
-          // end-users inevitably import '@babel/polyfill'.
-          useBuiltIns: 'entry',
+          // Inject only the core-js / regenerator polyfills actually used by
+          // each file, based on browserslist (production includes IE11).
+          // Do not also import core-js/stable in polyfills.js — that would
+          // pull the full set and defeat usage-based trimming.
+          // Version must match the installed core-js (3.49.x); without an
+          // explicit corejs, preset-env assumes core-js@2.
+          useBuiltIns: 'usage',
+          corejs: '3.49',
           // Do not transform modules to CJS
           modules: false,
         },
@@ -93,12 +95,12 @@ module.exports = function(api, opts) {
       // don't work without it: https://github.com/babel/babel/issues/7215
       require('@babel/plugin-transform-destructuring').default,
       // class { handleClick = () => { } }
-      require('@babel/plugin-proposal-class-properties').default,
+      require('@babel/plugin-transform-class-properties').default,
       // The following two plugins use Object.assign directly, instead of Babel's
       // extends helper. Note that this assumes `Object.assign` is available.
       // { ...todo, completed: true }
       [
-        require('@babel/plugin-proposal-object-rest-spread').default,
+        require('@babel/plugin-transform-object-rest-spread').default,
         {
           useBuiltIns: true,
         },
@@ -108,7 +110,7 @@ module.exports = function(api, opts) {
         require('@babel/plugin-transform-runtime').default,
         {
           helpers: false,
-          polyfill: false,
+          corejs: false,
           regenerator: true,
         },
       ],
